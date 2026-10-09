@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bank Soal UTS — Electronical Shipboard System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#07101f; --bg2:#0b182c; --card:#0f2038; --card2:#132a48; --line:#1f3a5f;
+  --cyan:#27d3f0; --gold:#e3b64f; --ink:#e8f0fa; --mute:#90a7c3;
+  --ok:#3ddc97; --bad:#ff6b6b;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-size:19px;line-height:1.45;
+  background-image:radial-gradient(900px 400px at 85% -10%,rgba(39,211,240,.10),transparent 60%),radial-gradient(700px 380px at -10% 10%,rgba(227,182,79,.08),transparent 60%)}
+a{color:var(--cyan)}
+h1,h2,h3{font-family:'Orbitron','Arial',sans-serif;margin:0;letter-spacing:.02em}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.mono{font-family:'Share Tech Mono',monospace}
+
+/* hero */
+.hero{padding:34px 0 22px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:clamp(26px,6vw,46px);font-weight:900;line-height:1.1;color:var(--ink)}
+.hero h1 span{color:var(--gold)}
+.hero p{margin:10px 0 0;color:var(--mute);max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.pill{font-family:'Share Tech Mono',monospace;font-size:14px;border:1px solid var(--line);background:var(--bg2);padding:5px 12px;border-radius:999px;color:var(--mute)}
+.pill b{color:var(--gold);font-weight:400}
+.author{margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--cyan)}
+
+/* nav */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(7,16,31,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+nav.tabs button{flex:0 0 auto;font:600 17px 'Barlow Condensed',sans-serif;color:var(--mute);background:transparent;border:1px solid transparent;border-radius:8px;padding:8px 14px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--bg);background:var(--cyan)}
+button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+section.panel{display:none;padding:26px 0 40px}
+section.panel.on{display:block}
+.sec-title{font-size:21px;color:var(--gold);margin-bottom:6px}
+.sec-sub{color:var(--mute);margin:0 0 18px;max-width:70ch}
+
+/* chain diagram */
+.chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px}
+.node{flex:1 1 120px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--cyan);border-radius:8px;padding:10px 12px}
+.node b{display:block;font-family:'Orbitron',sans-serif;font-size:14px;color:var(--cyan)}
+.node small{color:var(--mute);font-size:15px;line-height:1.25;display:block;margin-top:2px}
+.node.out{border-top-color:var(--gold)}.node.out b{color:var(--gold)}
+.arrow{align-self:center;color:var(--gold);font-family:'Share Tech Mono',monospace}
+
+/* details/accordion */
+details.item{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+details.item summary{cursor:pointer;list-style:none;padding:12px 14px;display:flex;gap:12px;align-items:baseline}
+details.item summary::-webkit-details-marker{display:none}
+details.item .no{font-family:'Share Tech Mono',monospace;color:var(--gold);min-width:2.2em}
+details.item .short{font-weight:600}
+details.item .short em{font-style:normal;color:var(--cyan)}
+details.item[open]{border-color:var(--cyan)}
+.body{padding:0 14px 14px 14px;color:#cfdcec}
+.body p{margin:0 0 8px}
+.body ol,.body ul{margin:6px 0 8px;padding-left:22px}
+.gl{display:inline-block;margin-top:4px;font-family:'Share Tech Mono',monospace;font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;margin-right:6px}
+
+/* toolbar */
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.chip{font:600 16px 'Barlow Condensed',sans-serif;background:var(--bg2);color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+input[type=search],select{font:500 17px 'Barlow Condensed',sans-serif;background:var(--bg2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:0}
+input[type=search]{flex:1 1 200px}
+.count{font-family:'Share Tech Mono',monospace;color:var(--mute);font-size:14px}
+.btn{font:700 17px 'Barlow Condensed',sans-serif;background:var(--cyan);color:var(--bg);border:0;border-radius:8px;padding:9px 18px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--cyan);border:1px solid var(--cyan)}
+
+/* question card */
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.qh{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+.tag{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--cyan);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.qn{font-family:'Share Tech Mono',monospace;color:var(--gold);font-size:14px}
+.qt{margin:0 0 12px;font-size:21px;font-weight:600;line-height:1.3}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;display:flex;gap:10px;font:500 18px 'Barlow Condensed',sans-serif;color:var(--ink);background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;cursor:pointer}
+.opt .l{font-family:'Share Tech Mono',monospace;color:var(--gold)}
+.opt:hover:not([disabled]){border-color:var(--cyan)}
+.opt.ok{border-color:var(--ok);background:rgba(61,220,151,.12)}
+.opt.bad{border-color:var(--bad);background:rgba(255,107,107,.12)}
+.opt[disabled]{cursor:default}
+.exp{margin-top:12px;padding:12px 14px;border-left:3px solid var(--gold);background:rgba(227,182,79,.07);border-radius:0 8px 8px 0;color:#d8e4f2}
+.exp b.k{color:var(--gold)}
+.exp.hid{display:none}
+
+/* quiz */
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.setup{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.setup label{display:flex;flex-direction:column;gap:4px;color:var(--mute);font-size:16px}
+.bar{height:8px;background:var(--bg2);border-radius:99px;overflow:hidden;margin:6px 0 14px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));width:0}
+.score{font-family:'Orbitron',sans-serif;font-size:44px;color:var(--gold);margin:6px 0}
+.rev{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+.rev .q{background:var(--bg2)}
+
+footer{border-top:1px solid var(--line);padding:22px 0 30px;color:var(--mute);font-size:16px}
+footer .mono{color:var(--cyan)}
+.note{font-size:16px;color:var(--mute)}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.ref{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.ref h3{font-size:14px;color:var(--cyan);margin-bottom:6px}
+.ref a{display:block;margin:2px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="mono" style="color:var(--gold);font-size:15px">Electronical Shipboard System</div>
+    <h1>Bank Soal <span>UTS</span><br>Shipboard Electrical</h1>
+    <p>30 poin checklist, <b id="nQ">72</b> soal pilihan ganda berpenjelasan, kuis acak, dan 12 soal esai dengan jawaban model. Fokus: eksitasi generator, sinkronisasi, proteksi, dan blackout.</p>
+    <div class="meta">
+      <span class="pill">Poltekpel Surabaya</span>
+      <span class="pill">Universitas Hang Tuah Surabaya</span>
+      <span class="pill">Semester Gasal <b>2026/2027</b></span>
+    </div>
+    <div class="author">Disusun oleh Rafael Sukirno, CE</div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Navigasi bagian">
+  <div class="wrap" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="cek">Checklist 30</button>
+    <button role="tab" aria-selected="false" data-tab="lat">Latihan Soal</button>
+    <button role="tab" aria-selected="false" data-tab="kuis">Kuis UTS</button>
+    <button role="tab" aria-selected="false" data-tab="esai">Esai</button>
+    <button role="tab" aria-selected="false" data-tab="ref">Referensi</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- CHECKLIST -->
+<section class="panel on" id="p-cek">
+  <h2 class="sec-title">UTS Checklist — jawaban singkat</h2>
+  <p class="sec-sub">Ketuk tiap poin untuk penjelasan lebih lengkap dan tautan pencarian gambar di Google.</p>
+  <div class="chain" aria-label="Rantai eksitasi">
+    <div class="node"><b>PMG</b><small>daya awal AVR</small></div><span class="arrow">&gt;</span>
+    <div class="node"><b>AVR</b><small>atur arus eksitasi</small></div><span class="arrow">&gt;</span>
+    <div class="node"><b>Exciter</b><small>AC 3 fasa rotor</small></div><span class="arrow">&gt;</span>
+    <div class="node"><b>Rectifier</b><small>AC jadi DC</small></div><span class="arrow">&gt;</span>
+    <div class="node"><b>Main Rotor</b><small>medan putar</small></div><span class="arrow">&gt;</span>
+    <div class="node out"><b>Main Stator</b><small>AC ke busbar</small></div>
+  </div>
+  <div id="cekList"></div>
+</section>
+
+<!-- LATIHAN -->
+<section class="panel" id="p-lat">
+  <h2 class="sec-title">Latihan soal pilihan ganda</h2>
+  <p class="sec-sub">Pilih jawaban, penjelasan langsung muncul. Urutan pilihan diacak setiap halaman dibuka.</p>
+  <div class="tools" id="chips"></div>
+  <div class="tools">
+    <input type="search" id="search" placeholder="Cari kata kunci, mis. diode, synchroscope" aria-label="Cari soal">
+    <button class="btn ghost" id="toggleAll">Tampilkan semua jawaban</button>
+    <button class="btn ghost" id="resetLat">Reset</button>
+    <span class="count" id="countLat"></span>
+  </div>
+  <div id="qList"></div>
+</section>
+
+<!-- KUIS -->
+<section class="panel" id="p-kuis">
+  <h2 class="sec-title">Kuis UTS acak</h2>
+  <p class="sec-sub">Simulasi: soal diambil acak, skor dihitung, soal yang salah ditinjau di akhir.</p>
+  <div class="box" id="quizBox"></div>
+</section>
+
+<!-- ESAI -->
+<section class="panel" id="p-esai">
+  <h2 class="sec-title">Soal esai dan jawaban model</h2>
+  <p class="sec-sub">Coba jawab sendiri dulu, lalu buka jawaban model untuk membandingkan.</p>
+  <div id="esaiList"></div>
+</section>
+
+<!-- REFERENSI -->
+<section class="panel" id="p-ref">
+  <h2 class="sec-title">Referensi dan pencarian</h2>
+  <p class="sec-sub">Tautan membuka pencarian Google (gambar dan teks) per topik. Rujukan standar di bawah adalah acuan yang lazim dipakai; selalu cek edisi terbaru.</p>
+  <div class="refgrid" id="refGrid"></div>
+  <div class="box" style="margin-top:16px">
+    <h3 style="font-size:15px;color:var(--gold);margin-bottom:8px">Acuan standar yang lazim</h3>
+    <ul style="margin:0;padding-left:20px">
+      <li>SOLAS Chapter II-1 Part D (instalasi listrik) dan Reg. 42/43 (sumber daya darurat)</li>
+      <li>IEC 60092 (instalasi listrik di kapal)</li>
+      <li>Aturan klasifikasi: BKI, DNV, LR, ABS, ClassNK</li>
+      <li>IMO Model Course dan manual generator, AVR, dan breaker dari pabrikan di kapal</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>Bank Soal UTS Electronical Shipboard System</div>
+    <div class="mono">Disusun oleh Rafael Sukirno, CE</div>
+    <div class="note">Poltekpel Surabaya dan Universitas Hang Tuah Surabaya. Nilai dan batas waktu contoh mengikuti SOLAS/IEC umum; untuk kapal tertentu, ikuti manual dan aturan class.</div>
+  </div>
+</footer>
+
+<script>
+const G = (q, img) => 'https://www.google.com/search?q=' + encodeURIComponent(q) + (img ? '&tbm=isch' : '');
+const TOPICS = {EX:'Eksitasi & AVR', MS:'MSB & Distribusi', SY:'Sinkronisasi & Paralel', PR:'Proteksi', BO:'Blackout & Darurat', TB:'Referensi Tambahan'};
+
+/* ============ CHECKLIST ============ */
+const CHECK = [
+ ['PMG','sumber listrik awal untuk AVR.','Generator magnet permanen di poros yang sama. Menghasilkan AC sendiri selama poros berputar, tidak tergantung tegangan generator utama. Karena itu AVR tetap bertenaga saat beban besar atau hubung singkat.','PMG permanent magnet generator marine alternator'],
+ ['AVR','mengatur tegangan generator.','Automatic Voltage Regulator membandingkan tegangan output dengan setpoint, lalu menaikkan atau menurunkan arus medan exciter agar tegangan stabil saat beban berubah.','marine generator AVR automatic voltage regulator'],
+ ['Exciter','menghasilkan arus eksitasi rotor.','Generator kecil: medan di stator (diatur AVR), armature di rotor menghasilkan AC 3 fasa untuk disearahkan ke main rotor.','brushless exciter generator armature stator field'],
+ ['Rotating rectifier','mengubah AC exciter menjadi DC rotor.','Dioda yang ikut berputar di poros. DC dikirim langsung ke rotor utama tanpa slip ring.','rotating rectifier diodes brushless alternator'],
+ ['Main rotor','menghasilkan medan magnet berputar.','Belitan rotor dialiri DC sehingga menjadi elektromagnet; diputar prime mover sehingga medannya berputar.','alternator main rotor salient pole'],
+ ['Main stator','menghasilkan tegangan AC keluaran generator.','Medan putar memotong belitan stator dan menginduksikan GGL (Faraday). Keluarannya ke busbar MSB.','alternator main stator winding'],
+ ['Excitation chain','PMG → AVR → Exciter → Rectifier → Main Rotor → Main Stator.','Hafalkan urutan ini. Daya awal dari PMG, dikendalikan AVR, diperkuat lewat exciter dan rectifier, lalu membuat medan rotor utama yang menginduksi stator.','brushless generator excitation system diagram'],
+ ['AVR feedback','mendeteksi tegangan output untuk koreksi AVR.','Sinyal sensing tegangan output dibandingkan dengan referensi. Selisih (error) menentukan besar arus eksitasi.','AVR sensing voltage feedback generator'],
+ ['AVR vs Governor','AVR mengatur Voltage/kVAR, governor mengatur Speed/Frequency/kW.','AVR bekerja pada sisi listrik (eksitasi). Governor bekerja pada sisi mekanik (bahan bakar mesin penggerak).','AVR vs governor generator voltage frequency kW kVAR'],
+ ['AC→DC diode','diode menyearahkan AC menjadi DC.','Dioda hanya melewatkan arus satu arah. Susunan jembatan tiga fasa menghasilkan DC untuk rotor.','three phase bridge rectifier diode'],
+ ['Brushless principle','eksitasi rotor tanpa slip ring/brush.','Sikat dan slip ring dihilangkan sehingga perawatan lebih sedikit dan tidak ada percikan.','brushless alternator principle ship generator'],
+ ['Diode open','arus tidak mengalir pada jalur diode tersebut.','Penyearahan tidak penuh; arus eksitasi turun, tegangan generator drop terutama saat beban tinggi.','rotating diode open circuit failure generator'],
+ ['Diode short','arus mengalir dua arah; rectifier terganggu.','Jalur tidak lagi menyearahkan; arus berlebih dan panas pada belitan exciter, tegangan tidak normal.','rotating diode short circuit failure generator'],
+ ['MSB','Main Switchboard, pusat distribusi listrik kapal.','Menghubungkan generator, busbar, dan feeder ke semua beban kapal serta menampung instrumen dan proteksi.','ship main switchboard MSB'],
+ ['Busbar/ACB/MCCB','busbar distribusi; ACB/MCCB proteksi dan switching.','Busbar membawa daya. ACB untuk generator dan feeder besar; MCCB untuk beban sedang atau kecil.','ACB MCCB marine main switchboard breaker'],
+ ['Synchroscope','menunjukkan perbedaan fase generator dengan busbar.','Jarum berputar sesuai selisih frekuensi; posisi jam 12 berarti sefase. Searah jarum jam berarti generator lebih cepat.','synchroscope generator synchronizing panel'],
+ ['4 syarat synchronizing','tegangan sama, frekuensi sama, phase sequence sama, sudut fase sama.','Keempatnya harus terpenuhi sebelum ACB ditutup agar tidak terjadi lonjakan arus dan hentakan mekanik.','generator synchronization four conditions'],
+ ['Phase sequence','urutan fase R-S-T harus sama.','Urutan terbalik berarti hubung singkat saat breaker ditutup. Dicek dengan phase sequence meter atau lampu sinkron.','phase sequence meter generator'],
+ ['Governor vs AVR','Governor → kW/frequency; AVR → kVAR/voltage.','Pada paralel, naikkan speed setpoint untuk memindahkan kW; naikkan eksitasi untuk memindahkan kVAR.','governor droop load sharing kW kVAR AVR'],
+ ['kW vs kVAR','kW = daya aktif; kVAR = daya reaktif.','kW menjadi kerja/torsi (ditopang mesin penggerak). kVAR membangun medan magnet motor dan trafo (ditopang eksitasi).','power triangle kW kVAR kVA'],
+ ['Load sharing','pembagian beban antar generator paralel.','Dicapai lewat droop governor dan pengaturan eksitasi/ kompensasi. Beban dibagi proporsional dengan kapasitas.','generator paralel load sharing droop'],
+ ['Reverse power','generator menerima daya dari busbar → bekerja seperti motor.','Sebab: mesin kehilangan bahan bakar atau governor gagal. Relay reverse power men-trip ACB.','reverse power relay generator marine'],
+ ['Overcurrent','arus melebihi batas → proteksi trip.','Overload (tunda waktu) dan short circuit (instan). Setelan tidak boleh melebihi kemampuan kabel dan breaker.','overcurrent relay marine generator protection'],
+ ['Earth fault','arus bocor menuju ground/hull.','Pada sistem IT kapal, gangguan pertama biasanya hanya alarm; cari dan perbaiki segera karena gangguan kedua jadi hubung singkat.','ship insulation monitor earth fault IT system'],
+ ['Under/over voltage','tegangan terlalu rendah/tinggi.','Rendah merusak motor dan memicu trip; tinggi merusak isolasi. Penyebab umum: gangguan AVR atau beban reaktif.','under voltage over voltage relay generator'],
+ ['Under/over frequency','frekuensi terlalu rendah/tinggi.','Menunjukkan masalah di mesin penggerak/ governor atau kelebihan beban.','under frequency relay generator'],
+ ['Differential','proteksi gangguan internal berdasarkan perbedaan arus masuk-keluar.','Bila arus yang masuk zona tidak sama dengan yang keluar, ada gangguan di dalam zona (mis. belitan stator).','generator differential protection'],
+ ['Load shedding','melepas beban tertentu untuk mencegah blackout.','Beban non-esensial dilepas bertahap saat generator mendekati overload agar beban esensial tetap hidup.','marine load shedding preferential trip'],
+ ['Emergency generator','menyediakan listrik saat main power gagal.','Start otomatis dan tersambung ke emergency switchboard dalam batas waktu SOLAS (45 detik).','emergency generator ship switchboard'],
+ ['Blackout recovery','deteksi blackout → emergency power → start main generator → energize MSB → reconnect/load restoration bertahap.','Pemulihan bertahap menghindari arus start besar yang bisa membuat generator trip lagi. Dahulukan beban esensial.','ship blackout recovery procedure']
+];
+
+/* ============ BANK SOAL ============ */
+const RAW = [
+['EX','Sumber listrik awal yang memasok AVR pada generator brushless dengan PMG adalah…',['PMG (Permanent Magnet Generator)','Baterai 24 V DC','Busbar MSB','Main rotor'],'PMG dipasang satu poros dengan generator dan magnetnya permanen, sehingga menghasilkan AC begitu poros berputar tanpa bergantung pada tegangan generator utama. AVR jadi tetap punya daya, bahkan saat hubung singkat atau start dari kondisi mati.'],
+['EX','Fungsi utama AVR adalah…',['Mengatur tegangan keluaran generator dengan mengubah arus eksitasi','Mengatur kecepatan putar diesel','Mengatur frekuensi busbar','Memutus beban saat overload'],'AVR membandingkan tegangan output (sensing) dengan setpoint; selisihnya mengatur arus medan exciter sehingga tegangan stabil saat beban berubah. Kecepatan dan frekuensi adalah tugas governor.'],
+['EX','Exciter pada generator brushless berfungsi menghasilkan…',['Arus eksitasi untuk main rotor (lewat rectifier)','Tegangan 440 V ke busbar','Sinyal sinkronisasi','Tenaga untuk governor'],'Exciter adalah generator kecil: medannya di stator (dikendalikan AVR), armature di rotor menghasilkan AC 3 fasa yang kemudian disearahkan menjadi DC untuk main rotor.'],
+['EX','Rotating rectifier berfungsi…',['Mengubah AC dari exciter menjadi DC untuk main rotor','Mengubah DC menjadi AC untuk busbar','Menaikkan frekuensi','Mengukur arus rotor'],'Dioda dipasang pada poros berputar sehingga DC langsung masuk ke rotor tanpa slip ring dan sikat.'],
+['EX','Medan magnet berputar pada generator utama dihasilkan oleh…',['Main rotor','Main stator','Busbar','Synchroscope'],'Rotor dialiri DC menjadi elektromagnet. Karena diputar prime mover, medannya berputar dan memotong belitan stator.'],
+['EX','Tegangan AC keluaran generator yang disalurkan ke MSB dihasilkan di…',['Main stator','Rotor exciter','AVR','Rectifier'],'Medan putar memotong belitan stator dan menginduksi GGL (Hukum Faraday). Itulah tegangan keluaran yang dihubungkan ke busbar.'],
+['EX','Urutan rantai eksitasi generator brushless yang benar adalah…',['PMG → AVR → Exciter → Rectifier → Main Rotor → Main Stator','AVR → PMG → Rectifier → Exciter → Main Stator → Main Rotor','Exciter → PMG → AVR → Main Stator → Rectifier → Main Rotor','PMG → Exciter → AVR → Main Rotor → Rectifier → Main Stator'],'Daya awal dari PMG, diatur AVR, masuk ke medan exciter, AC exciter disearahkan rectifier berputar, DC menggerakkan main rotor, dan main stator menghasilkan tegangan keluaran.'],
+['EX','Sinyal feedback AVR diperoleh dari…',['Tegangan output generator (sensing)','Kecepatan turbocharger','Tekanan minyak lumas','Suhu air pendingin'],'Tegangan output dideteksi (umumnya lewat trafo potensial/ sensing) dan dibandingkan dengan referensi. Hilangnya sinyal sensing dapat membuat koreksi salah, karena itu banyak AVR punya proteksi loss of sensing.'],
+['EX','Perbedaan AVR dan governor yang benar adalah…',['AVR mengatur voltage/kVAR; governor mengatur speed/frequency/kW','AVR mengatur kW/frekuensi; governor mengatur kVAR/tegangan','Keduanya mengatur tegangan','Keduanya mengatur frekuensi'],'AVR bekerja di sisi listrik (arus eksitasi). Governor bekerja di sisi mekanik (suplai bahan bakar ke mesin penggerak).'],
+['EX','Dioda pada rectifier generator berfungsi…',['Menyearahkan AC menjadi DC (arus satu arah)','Menaikkan tegangan','Menyimpan energi','Memperbesar frekuensi'],'Dioda hanya melewatkan arus pada satu arah. Susunan jembatan tiga fasa menghasilkan DC untuk medan rotor.'],
+['EX','Keunggulan utama generator brushless dibanding yang memakai slip ring dan sikat adalah…',['Tidak ada slip ring/sikat sehingga perawatan lebih sedikit dan bebas percikan','Tidak membutuhkan AVR','Tidak membutuhkan penggerak','Tidak membutuhkan eksitasi'],'Tanpa kontak gesek, tidak ada keausan sikat, debu karbon, atau percikan. Perawatan lebih ringan dan lebih andal.'],
+['EX','Jika satu dioda rotating rectifier open (putus), akibat yang paling mungkin…',['Arus tidak mengalir pada jalur dioda itu; eksitasi dan tegangan cenderung turun','Arus mengalir dua arah pada jalur itu','Tegangan naik tak terbatas','Frekuensi naik'],'Jalur terbuka membuat penyearahan tidak penuh. DC rotor berkurang dan ripple naik; tegangan drop terutama saat beban tinggi dan AVR bekerja lebih keras.'],
+['EX','Dioda rotating rectifier yang short (hubung singkat) menyebabkan…',['Arus mengalir dua arah sehingga penyearahan terganggu dan terjadi arus/ panas berlebih','Penyearahan jadi lebih baik','Tidak ada pengaruh','Generator berhenti berputar'],'Dioda short tidak lagi menahan arus balik. Rectifier tidak bekerja benar, belitan exciter menanggung arus berlebih, dan tegangan keluaran tidak normal.'],
+['EX','Generator tidak mau membangun tegangan setelah start. Pemeriksaan awal yang tepat…',['Cek catu PMG ke AVR, sekering AVR, sambungan medan exciter, dan kondisi AVR','Ganti turbocharger','Turunkan kecepatan engine','Buka semua ACB beban'],'Tanpa eksitasi awal, tegangan tidak naik. Periksa rantai eksitasi dari sumbernya: PMG, AVR dan sekeringnya, lalu medan exciter.'],
+['EX','Pada kecepatan tetap, tegangan induksi generator berbanding lurus dengan…',['Fluks medan (arus eksitasi)','Jumlah silinder diesel','Beban kW','Tekanan bahan bakar'],'Secara konsep E ≈ 4,44 · f · N · Φ. Dengan f tetap, mengatur fluks lewat arus eksitasi berarti mengatur tegangan, dan itulah kerja AVR.'],
+['EX','Saat beban induktif (kVAR) bertambah, tegangan generator cenderung turun. Respons AVR…',['Menaikkan arus eksitasi','Menurunkan arus eksitasi','Memutus ACB','Menaikkan speed governor'],'Penurunan tegangan terdeteksi sebagai error, sehingga AVR menaikkan arus eksitasi untuk mengembalikan tegangan ke setpoint.'],
+
+['MS','MSB (Main Switchboard) adalah…',['Pusat distribusi listrik utama kapal yang menghubungkan generator, busbar, dan feeder beban','Panel khusus lampu navigasi','Gudang suku cadang listrik','Baterai darurat'],'MSB menampung generator breaker, busbar, feeder, instrumen, dan proteksi. Dari sinilah daya didistribusikan ke seluruh beban kapal.'],
+['MS','Busbar mendistribusikan daya, sedangkan proteksi dan switching dilakukan oleh…',['ACB/MCCB','Synchroscope','AVR','PMG'],'ACB (Air Circuit Breaker) dan MCCB (Moulded Case Circuit Breaker) membuka dan menutup rangkaian serta memutus arus gangguan.'],
+['MS','ACB umumnya dipakai pada…',['Generator breaker dan feeder arus besar; dapat dirawat','Lampu kabin','Rangkaian kontrol 24 V','Sensor suhu'],'ACB memadamkan busur di udara, mampu arus besar, dan komponennya dapat diperiksa dan dirawat. MCCB tertutup dalam casing cetak dan untuk beban sedang atau kecil.'],
+['MS','Meter di panel generator yang menunjukkan daya aktif adalah…',['Wattmeter (kW)','Voltmeter','Frequency meter','Insulation monitor'],'Wattmeter membaca kW. Voltmeter membaca tegangan, frequency meter membaca frekuensi, dan insulation monitor membaca tahanan isolasi.'],
+['MS','Distribusi utama pada banyak kapal niaga adalah…',['440 V, 60 Hz, 3 fasa','12 V DC','6 kV 50 Hz','5 V DC'],'Banyak kapal memakai 440 V/60 Hz (ada juga 380/400 V/50 Hz). Kapal besar tertentu memakai tegangan menengah seperti 3,3 atau 6,6 kV.'],
+['MS','Lampu 220 V pada kapal bertegangan utama 440 V diperoleh dari…',['Transformator step-down','Resistor seri','Dioda','Slip ring'],'Transformator menurunkan 440 V ke 220/110 V untuk penerangan dan stop kontak, sekaligus memisahkan galvanis.'],
+['MS','Preferential trip berfungsi…',['Melepas beban non-esensial lebih dulu saat generator overload agar beban esensial tetap hidup','Mempercepat start generator','Menaikkan frekuensi','Menyinkronkan generator'],'Saat arus atau beban generator tinggi, beban yang kurang penting dilepas bertahap untuk menjaga generator dan beban vital.'],
+['MS','Sebelum bekerja pada panel atau feeder, prosedur yang benar…',['Isolasi, lock-out/tag-out, buktikan mati dengan alat uji, baru kerja','Cukup memakai sarung tangan karet','Matikan lampu ruangan','Hanya lapor ke bridge'],'Sumber diisolasi, dikunci dan diberi tag, lalu dibuktikan tidak bertegangan dengan alat uji yang sudah dicek, baru pekerjaan dimulai.'],
+
+['SY','Synchroscope menunjukkan…',['Perbedaan fase (dan arah selisih frekuensi) antara generator masuk dan busbar','Beban kW','Tegangan baterai','Suhu stator'],'Jarum di posisi jam 12 berarti sefase. Putaran jarum menunjukkan selisih frekuensi: searah jarum jam berarti generator masuk lebih cepat.'],
+['SY','Empat syarat sinkronisasi yang benar…',['Tegangan, frekuensi, urutan fase, dan sudut fase sama','Daya, putaran, suhu, dan tekanan sama','Arus, kW, kVAR, dan power factor sama','Merk, tipe, umur, dan rating sama'],'Keempat syarat harus terpenuhi sebelum ACB generator ditutup agar tidak ada lonjakan arus dan hentakan mekanik.'],
+['SY','Phase sequence yang salah saat paralel menyebabkan…',['Hubung singkat fase-fase saat breaker ditutup','Frekuensi turun halus','Tidak ada efek','Efisiensi naik'],'Urutan fase tidak boleh terbalik. Biasanya diperiksa setelah instalasi atau perbaikan kabel memakai phase sequence meter atau lampu sinkron.'],
+['SY','Synchroscope berputar searah jarum jam berarti…',['Generator masuk lebih cepat (frekuensi lebih tinggi) dari busbar','Generator masuk lebih lambat dari busbar','Tegangan generator terlalu tinggi','Urutan fase salah'],'Praktiknya generator dibuat sedikit lebih cepat, putaran jarum diperlambat, dan ACB ditutup sedikit sebelum posisi jam 12.'],
+['SY','Dua generator paralel. Menaikkan setpoint speed governor generator A akan…',['Menaikkan porsi kW generator A (dan menurunkan porsi B)','Menaikkan kVAR A','Menurunkan tegangan bus','Tidak berpengaruh'],'Pada paralel frekuensi ditentukan bersama; governor menggeser pembagian daya aktif (kW) antar generator.'],
+['SY','Menaikkan eksitasi generator A saat paralel terutama…',['Menaikkan kVAR yang disuplai A','Menaikkan kW A','Menurunkan frekuensi','Memutus ACB'],'Eksitasi memengaruhi daya reaktif. Tegangan bus relatif tetap karena ditentukan bersama; yang bergeser adalah pembagian kVAR.'],
+['SY','Daya aktif (kW) adalah…',['Daya yang menjadi kerja/ torsi dan ditopang oleh prime mover','Daya yang membangun medan magnet saja','Daya semu','Daya yang hilang'],'kW adalah daya aktif yang dikonversi menjadi kerja. kVAR adalah daya reaktif untuk medan magnet motor dan trafo.'],
+['SY','Load sharing adalah…',['Pembagian beban (kW dan kVAR) antar generator paralel sesuai proporsi kapasitas','Pembagian bahan bakar antar tangki','Pemisahan busbar','Pembagian tegangan antar fase'],'Beban dibagi sehingga tidak ada generator yang kelebihan beban sementara yang lain hampir kosong.'],
+['SY','Droop governor (sekitar 3–5%) pada generator paralel dimaksudkan untuk…',['Membuat load sharing stabil (frekuensi turun sedikit saat beban naik)','Menaikkan tegangan','Menghapus syarat sinkron','Menghapus kebutuhan AVR'],'Droop membuat tiap governor memberi respons proporsional pada perubahan beban sehingga pembagian kW stabil.'],
+['SY','Saat sinkronisasi, generator masuk dibuat sedikit lebih cepat agar…',['Langsung menanggung sedikit beban dan tidak masuk reverse power','Tegangan naik','Governor mati','Urutan fase berubah'],'Jika masuk sedikit lambat, generator bisa menjadi motor dan memicu reverse power setelah ACB menutup.'],
+['SY','Menutup ACB sebelum sinkron dapat menyebabkan…',['Arus lonjakan besar, hentakan mekanik, dan trip atau kerusakan','Penghematan bahan bakar','Tegangan lebih stabil','Tidak ada akibat'],'Selisih fase dan frekuensi memaksa generator ditarik ke sinkron secara mendadak: arus besar dan torsi kejut pada poros dan kopling.'],
+['SY','Pada metode tiga lampu sinkron, ACB ditutup saat…',['Lampu padam (gelap) bersamaan di tengah siklus','Lampu paling terang','Lampu berkedip sangat cepat','Salah satu lampu putus'],'Lampu gelap berarti beda tegangan nol. Bila frekuensi hampir sama, kedipan melambat; tutup di tengah periode gelap.'],
+
+['PR','Reverse power terjadi ketika…',['Generator menerima daya dari busbar dan bekerja seperti motor','Tegangan generator naik','Frekuensi busbar nol','Beban melebihi rating'],'Penyebab: mesin kehilangan bahan bakar, governor gagal, atau salah saat sinkronisasi. Relay reverse power men-trip ACB setelah tunda singkat.'],
+['PR','Proteksi overcurrent bekerja ketika…',['Arus melebihi setelan (overload atau short circuit)','Tegangan di bawah batas','Frekuensi di atas batas','Fase terbalik'],'Overload ditangani dengan karakteristik tunda waktu; hubung singkat ditangani trip cepat/ instan.'],
+['PR','Earth fault berarti…',['Arus bocor dari penghantar ke ground/ hull kapal','Dua fase hubung singkat','Frekuensi turun','Generator over-speed'],'Isolasi tembus ke body atau hull. Dipantau insulation monitor dan relay earth fault.'],
+['PR','Pada sistem IT (netral terisolasi) kapal, earth fault pertama biasanya…',['Hanya memicu alarm sehingga operasi berlanjut, tetapi harus segera dicari dan diperbaiki','Selalu langsung trip total','Tidak berbahaya selamanya','Menaikkan frekuensi'],'Tanpa jalur balik, arus gangguan pertama kecil. Namun earth fault kedua pada fase lain menjadi hubung singkat melalui hull.'],
+['PR','Proteksi under-voltage berguna untuk…',['Mencegah operasi tegangan terlalu rendah dan motor start sendiri tak terkendali saat tegangan kembali (no-volt release)','Hanya mencegah tegangan tinggi','Mencegah arus kecil','Mencegah fase terbalik'],'Tegangan rendah dapat merusak motor atau membuatnya menarik arus tinggi. Release tegangan nol menjaga motor tidak menyala mendadak saat daya pulih.'],
+['PR','Over-voltage dapat disebabkan antara lain oleh…',['Gangguan AVR yang menaikkan eksitasi berlebih','Penambahan beban','Frekuensi turun','Starter DOL'],'AVR salah koreksi (mis. sensing hilang) bisa menaikkan eksitasi dan tegangan secara berlebihan, sehingga merusak isolasi.'],
+['PR','Under-frequency biasanya menandakan…',['Prime mover kelebihan beban atau kekurangan daya (governor/bahan bakar)','Eksitasi berlebih','Fase terbalik','Sensor tegangan rusak'],'Frekuensi ditentukan putaran. Beban melebihi kapasitas mesin menurunkan putaran dan frekuensi.'],
+['PR','Proteksi differential bekerja berdasarkan…',['Perbedaan arus masuk dan keluar zona yang diproteksi (gangguan internal)','Perbedaan tegangan fase-netral','Kecepatan turbin','Suhu minyak'],'Dalam kondisi normal arus masuk sama dengan keluar. Selisih berarti ada kebocoran di dalam zona, mis. hubung singkat belitan stator.'],
+['PR','Breaking capacity ACB harus…',['≥ arus hubung singkat prospektif di titik pemasangan','Lebih kecil dari arus beban','Sama dengan arus nominal motor','Tidak perlu diperhatikan'],'Breaker harus mampu memutus arus gangguan tertinggi tanpa rusak.'],
+['PR','Selectivity (diskriminasi) proteksi berarti…',['Hanya breaker terdekat gangguan yang trip, bagian lain tetap hidup','Semua breaker trip bersamaan','Breaker utama selalu trip duluan','Tidak ada breaker trip'],'Dicapai dengan koordinasi setelan arus dan waktu agar gangguan terlokalisir.'],
+['PR','Pengukuran tahanan isolasi (megger) dilakukan…',['Saat instalasi mati dan terisolasi dari sumber, dengan tegangan uji DC sesuai rating','Saat generator berbeban penuh','Saat panel hidup','Tanpa isolasi sumber'],'Nilai rendah atau menurun menandakan kelembapan, kotoran, atau degradasi isolasi. Nilai minimum mengikuti manual, kebijakan perusahaan, dan class.'],
+
+['BO','Load shedding adalah…',['Melepas beban tertentu secara otomatis untuk mencegah overload dan blackout','Menambah beban saat kosong','Menyinkronkan generator','Mengisi baterai'],'Saat daya mendekati batas, beban non-esensial dilepas agar generator tetap stabil dan beban vital hidup.'],
+['BO','Beban yang dilepas pertama pada load shedding adalah…',['Beban non-esensial (mis. AC akomodasi, galley, ventilasi non-kritis)','Steering gear','Pompa pendingin utama','Pompa minyak lumas'],'Beban esensial (kemudi, pelumasan, pendinginan, bahan bakar) dipertahankan paling akhir.'],
+['BO','Emergency generator berfungsi…',['Menyediakan listrik ke emergency switchboard saat main power gagal','Menggantikan semua beban normal kapal','Menyinkronkan generator utama','Menjadi beban cadangan'],'Memasok beban vital: penerangan darurat, navigasi, komunikasi, pompa pemadam kebakaran darurat, dan steering gear.'],
+['BO','Menurut SOLAS, emergency generator harus start otomatis dan tersambung ke emergency switchboard dalam…',['45 detik','5 menit','10 menit','2 jam'],'Selama jeda itu, sumber transisi (baterai) menjaga beban penting tetap hidup.'],
+['BO','Urutan pemulihan blackout yang benar…',['Deteksi blackout → emergency power → start main generator → energize MSB → reconnect/ load restoration bertahap','Hidupkan semua beban → start generator','Energize MSB → tunggu → emergency power','Matikan semua baterai'],'Emergency power dulu agar sistem vital hidup, lalu generator utama dan MSB, lalu beban dikembalikan bertahap sesuai prioritas.'],
+['BO','Mengapa beban dipulihkan bertahap (sequential restart)?',['Arus start motor 5–7× nominal bisa membuat tegangan jatuh dan generator trip lagi','Agar listrik hemat','Agar urutan fase benar','Supaya AVR istirahat'],'Menyambung semua motor sekaligus menjumlahkan arus start besar dan dapat membuat blackout berulang.'],
+['BO','Auto-start standby generator saat blackout membutuhkan…',['Sinyal dead bus/ under-voltage dan sistem start yang siap (udara start, bahan bakar, pelumas)','Pengisian manual','Tegangan 24 V dari AVR','Tidak butuh apa-apa'],'Power management system mendeteksi dead bus dan memerintahkan start serta penutupan breaker bila semua syarat start siap.'],
+['BO','Interlock antara main dan emergency switchboard bertujuan…',['Mencegah dua sumber menyuplai tanpa sinkron dan menjamin transisi aman antar sumber','Menaikkan tegangan','Menyinkronkan frekuensi otomatis','Menghemat kabel'],'Emergency switchboard normalnya disuplai dari MSB lewat interconnector. Saat main gagal, interconnector terbuka dan emergency generator menyuplai; interlock mencegah keduanya tersambung tanpa sinkron.'],
+['BO','Penyebab blackout yang umum…',['Overload generator, gangguan bahan bakar/ governor, trip proteksi, atau human error','Gelombang tinggi','Cuaca cerah','Warna cat panel'],'Pencegahan: perawatan, pemantauan beban, pengaturan standby generator, dan prosedur yang benar.'],
+['BO','Dead ship condition adalah…',['Mesin utama, boiler, dan auxiliary tidak beroperasi serta tidak ada energi tersimpan untuk memulihkannya','Kapal sandar di pelabuhan','Kapal sedang docking','Kapal berlayar normal'],'Pemulihan dimulai dari sumber darurat (emergency generator/ udara start darurat) untuk menghidupkan kembali sistem utama.'],
+
+['TB','Generator 60 Hz, 4 kutub berputar pada…',['1800 rpm','3600 rpm','900 rpm','1200 rpm'],'n = 120 · f / p = 120 × 60 / 4 = 1800 rpm.'],
+['TB','Generator 60 Hz berputar 720 rpm memiliki jumlah kutub…',['8','10','12','6'],'p = 120 · f / n = 120 × 60 / 720 = 10 kutub.'],
+['TB','Mengapa generator dirating dalam kVA, bukan kW?',['Pemanasan belitan bergantung pada arus dan tegangan, bukan pada power factor beban','kW tidak dapat diukur','AVR hanya membaca kVA','kVA selalu lebih kecil'],'Generator harus aman terhadap arus dan tegangan. kW yang bisa diambil bergantung pada power factor beban (rating umum 0,8 lagging).'],
+['TB','Generator 440 V, 3 fasa, 500 kW, pf 0,8. Arus beban sekitar…',['±820 A','±410 A','±1.640 A','±205 A'],'I = P / (√3 · V · pf) = 500.000 / (1,732 × 440 × 0,8) ≈ 820 A.'],
+['TB','Motor induksi 4 kutub 60 Hz berputar 1764 rpm. Slip-nya…',['2%','4%','0,2%','10%'],'ns = 1800 rpm; slip = (1800 − 1764) / 1800 = 2%.'],
+['TB','Starter Star-Delta mengurangi arus start menjadi sekitar…',['1/3 arus DOL','2× DOL','Sama dengan DOL','1/10 DOL'],'Saat tersambung bintang, tegangan per belitan turun menjadi 1/√3 sehingga arus start sekitar sepertiga DOL (torsi start juga turun).'],
+['TB','Kode IP56 berarti…',['Terlindung debu (5) dan semprotan air kuat (6)','Terlindung sentuhan jari dan tetesan','Kedap debu penuh dan terendam','Tanpa proteksi'],'Angka pertama: proteksi benda padat/ debu. Angka kedua: proteksi air.'],
+['TB','Sebelum shore connection menyuplai MSB, hal wajib dicek…',['Tegangan, frekuensi, dan urutan fase sesuai kapal serta interlock dengan generator','Warna kabel','Suhu air laut','Kecepatan kapal'],'Beda tegangan, frekuensi, atau urutan fase dapat merusak beban. Paralel dengan generator kapal tidak boleh dilakukan sembarangan.'],
+['TB','Ruang baterai lead-acid memerlukan ventilasi karena…',['Pengisian menghasilkan gas hidrogen yang mudah meledak','Menghasilkan karbon monoksida','Menyerap oksigen','Baterai jadi dingin'],'Hindari api dan percikan di ruang baterai; ventilasi mencegah akumulasi hidrogen.'],
+['TB','Kabel kapal sesuai IEC 60092 umumnya bersifat…',['Tahan api/ tidak menjalarkan api (flame retardant) dan sesuai kondisi laut','Tanpa isolasi','Hanya tembaga telanjang','Hanya untuk darat'],'Kabel kapal harus tahan getaran, kelembapan, minyak, dan tidak menjalarkan api.'],
+['TB','Peralatan listrik di area berbahaya (mis. pump room tanker) harus…',['Bersertifikat explosion-proof atau intrinsically safe (Ex) sesuai zona','Boleh peralatan biasa','Tanpa grounding','Dipasang terbuka'],'Peralatan harus tidak menjadi sumber penyalaan gas atau uap mudah terbakar.'],
+['TB','VFD pada motor besar dapat menimbulkan…',['Harmonisa yang dapat mengganggu AVR dan memanaskan peralatan bila tidak difilter','Frekuensi turun permanen','Tegangan nol','Fase hilang'],'Harmonisa membuat distorsi gelombang tegangan; dampaknya antara lain panas berlebih dan gangguan pada pengukuran dan AVR.'],
+['TB','Insulation monitor pada MSB berfungsi…',['Memantau tahanan isolasi sistem terhadap hull dan memberi alarm earth fault','Mengukur kecepatan','Mengatur tegangan','Menyinkronkan generator'],'Pada sistem IT, alat ini memberi peringatan dini penurunan isolasi.'],
+['TB','Steering gear listrik menurut SOLAS disuplai…',['Minimal dua rangkaian terpisah langsung dari MSB','Satu kabel saja','Baterai kecil saja','Tanpa proteksi'],'Redundansi suplai menjaga kemudi tetap berfungsi bila satu rangkaian gagal.'],
+['TB','Mengapa breaker generator menggunakan relay reverse power dan bukan hanya overcurrent?',['Saat reverse power, arus bisa kecil sehingga overcurrent tidak mendeteksinya','Overcurrent tidak ada di kapal','Reverse power hanya untuk motor','Tidak ada perbedaan'],'Generator yang menjadi motor mungkin hanya menarik arus kecil; perlu relay yang membaca arah aliran daya.'],
+['TB','Power factor 1,0 berarti…',['Seluruh daya adalah daya aktif (kVAR nol)','Seluruh daya reaktif','Tegangan nol','Frekuensi nol'],'kVA sama dengan kW; arus paling efisien. Beban motor biasanya lagging sehingga pf < 1.'],
+['TB','Mengapa transformator dan motor yang tidak terbebani tetap menarik arus?',['Mereka butuh arus magnetisasi (kVAR) untuk membangun medan magnet','Karena kabel bocor','Karena AVR rusak','Karena frekuensi terlalu rendah'],'Arus magnetisasi adalah komponen reaktif yang disuplai generator lewat eksitasi.'],
+['TB','Pada generator paralel, kapan breaker generator seharusnya dibuka saat menurunkan beban?',['Setelah beban dipindahkan hingga sekitar nol kW untuk menghindari hentakan dan reverse power','Langsung saat beban penuh','Saat tegangan nol','Saat urutan fase dibalik'],'Pindahkan beban dulu dengan governor; baru buka ACB agar tidak ada lonjakan pada generator yang tersisa.']
+];
+
+const ESAI = [
+ ['Jelaskan rantai eksitasi generator brushless dari PMG sampai main stator, beserta fungsi tiap komponen.','<ol><li>PMG: menghasilkan AC awal, independen dari tegangan generator.</li><li>AVR: menyearahkan dan mengatur daya PMG menjadi arus medan exciter berdasarkan error tegangan.</li><li>Exciter: AC 3 fasa dihasilkan armature rotor exciter.</li><li>Rotating rectifier: menyearahkan menjadi DC tanpa slip ring.</li><li>Main rotor: elektromagnet berputar.</li><li>Main stator: GGL induksi AC sebagai tegangan keluaran ke MSB.</li></ol>'],
+['Bandingkan AVR dan governor: besaran yang diatur, sisi kerja, dan efek pada generator paralel.','<ul><li>AVR: tegangan dan kVAR; sisi listrik (eksitasi).</li><li>Governor: kecepatan, frekuensi, dan kW; sisi mekanik (bahan bakar).</li><li>Paralel: naikkan speed setpoint untuk memindah kW; naikkan eksitasi untuk memindah kVAR.</li></ul>'],
+['Jelaskan empat syarat sinkronisasi dan langkah memparalel generator ke busbar.','<ol><li>Start generator, stabilkan putaran, bangkitkan tegangan.</li><li>Samakan tegangan dan frekuensi (generator sedikit lebih cepat).</li><li>Pastikan urutan fase sama.</li><li>Amati synchroscope searah jarum jam pelan; tutup ACB sedikit sebelum jam 12.</li><li>Ambil beban segera agar tidak reverse power; atur load sharing.</li></ol>'],
+['Apa itu reverse power? Jelaskan penyebab, akibat, dan proteksinya.','<ul><li>Generator menerima daya dari busbar dan berputar sebagai motor.</li><li>Penyebab: kehilangan bahan bakar, governor gagal, salah sinkronisasi.</li><li>Akibat: mesin diputar generator, risiko kerusakan dan gangguan di sistem.</li><li>Proteksi: relay reverse power men-trip ACB setelah tunda waktu.</li></ul>'],
+['Mengapa sistem IT pada kapal menoleransi earth fault pertama, dan apa risiko earth fault kedua?','<p>Netral terisolasi tidak memberi jalur balik, sehingga arus gangguan pertama kecil dan hanya diberi alarm oleh insulation monitor; kapal tetap beroperasi. Namun gangguan kedua pada fase lain menjadi hubung singkat melalui hull, sehingga gangguan pertama harus segera dilacak dan diperbaiki.</p>'],
+['Jelaskan load shedding dan preferential trip serta urutan beban yang dilepas.','<p>Saat generator mendekati overload (arus/ kW tinggi), beban non-esensial dilepas bertahap (AC akomodasi, galley, ventilasi non-kritis) untuk mencegah blackout. Beban esensial (steering, pelumasan, pendinginan, bahan bakar, navigasi) dipertahankan.</p>'],
+['Uraikan prosedur blackout recovery dari deteksi sampai pemulihan beban.','<ol><li>Deteksi: dead bus, alarm blackout.</li><li>Emergency generator start dan menyuplai emergency switchboard (≤ 45 detik).</li><li>Start dan sinkron generator utama; kondisikan sistem pendukung (LO, FO, cooling).</li><li>Energize MSB.</li><li>Pulihkan beban bertahap dari yang esensial; amati arus start dan frekuensi.</li><li>Cari penyebab dan catat.</li></ol>'],
+['Bandingkan akibat dioda open dan dioda short pada rotating rectifier.','<ul><li>Open: arus tidak mengalir di jalur itu, penyearahan tidak penuh, DC rotor turun, tegangan drop saat beban.</li><li>Short: arus dua arah, rectifier tidak menyearahkan, arus dan panas berlebih pada belitan exciter, tegangan tidak normal.</li><li>Pengujian: ukur tahanan maju/ mundur dioda dalam keadaan mati.</li></ul>'],
+['Jelaskan perbedaan kW dan kVAR dan bagaimana keduanya dibagi pada generator paralel.','<p>kW: daya aktif untuk kerja/ torsi, ditopang prime mover, dibagi lewat governor dan droop. kVAR: daya reaktif untuk medan magnet, ditopang eksitasi, dibagi lewat pengaturan AVR (dan kompensasi droop tegangan/ cross-current). kVA = √(kW² + kVAR²).</p>'],
+['Mengapa generator brushless dipakai di kapal dan apa kelemahannya?','<ul><li>Keunggulan: tanpa slip ring/ sikat, perawatan rendah, tahan lingkungan, andal.</li><li>Kelemahan: komponen berputar (dioda) sulit diakses dan diperiksa saat berjalan; gangguan dioda baru terdeteksi dari gejala tegangan; respon eksitasi agak lebih lambat.</li></ul>'],
+['Sebutkan jenis proteksi generator dan fungsinya.','<ul><li>Overcurrent: overload dan short circuit.</li><li>Reverse power: generator menjadi motor.</li><li>Under/over voltage: tegangan di luar batas.</li><li>Under/over frequency: masalah mesin atau beban.</li><li>Earth fault: kebocoran ke hull.</li><li>Differential: gangguan internal belitan.</li></ul>'],
+['Jelaskan fungsi emergency generator dan persyaratan SOLAS yang terkait.','<p>Emergency generator menyuplai beban vital saat main power gagal: penerangan darurat, navigasi, komunikasi, pompa pemadam darurat, dan steering gear. SOLAS mensyaratkan start otomatis dan tersambung ke emergency switchboard dalam 45 detik, dengan sumber transisi (baterai) menyangga selama jeda dan lokasi di luar ruang mesin utama.</p>']
+];
+
+const REFS = [
+ ['Eksitasi & AVR',['PMG brushless alternator','AVR marine generator','rotating rectifier diode test']],
+ ['MSB & breaker',['ship main switchboard','ACB MCCB marine','busbar marine switchboard']],
+ ['Sinkronisasi',['synchroscope marine','generator synchronizing procedure','load sharing droop']],
+ ['Proteksi',['marine generator protection relay','reverse power relay','insulation monitor IT system ship']],
+ ['Blackout & darurat',['ship blackout recovery','emergency generator SOLAS 45 seconds','load shedding marine PMS']],
+ ['Motor & starter',['DOL star delta soft starter marine','VFD harmonics ship','motor insulation resistance megger']],
+ ['Baterai & UPS',['marine battery lead acid ventilation','UPS ship bridge','emergency batteries SOLAS']],
+ ['Keselamatan',['lock out tag out electrical ship','high voltage safety ship','hazardous area Ex equipment tanker']]
+];
+
+/* ============ INIT DATA ============ */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const QS = RAW.map((r,i)=>({id:i,t:r[0],q:r[1],o:shuffle(r[2].map((x,k)=>({t:x,c:k===0}))),e:r[3]}));
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+$('#nQ').textContent = QS.length;
+const LET = ['A','B','C','D'];
+
+/* ============ TABS ============ */
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.tab));
+  window.scrollTo({top:0});
+}));
+
+/* ============ CHECKLIST RENDER ============ */
+$('#cekList').innerHTML = CHECK.map((c,i)=>`
+<details class="item"><summary><span class="no">${String(i+1).padStart(2,'0')}</span><span class="short"><em>${esc(c[0])}</em>: ${esc(c[1])}</span></summary>
+<div class="body"><p>${esc(c[2])}</p>
+<a class="gl" target="_blank" rel="noopener" href="${G(c[3],true)}">Gambar di Google</a><a class="gl" target="_blank" rel="noopener" href="${G(c[3])}">Cari penjelasan</a></div></details>`).join('');
+
+/* ============ QUESTION CARD ============ */
+function cardHTML(q, n, idPrefix){
+  return `<article class="q" data-id="${q.id}">
+  <div class="qh"><span class="tag">${TOPICS[q.t]}</span><span class="qn">#${n}</span></div>
+  <p class="qt">${esc(q.q)}</p>
+  <div class="opts">${q.o.map((o,k)=>`<button class="opt" data-k="${k}"><span class="l">${LET[k]}.</span><span>${esc(o.t)}</span></button>`).join('')}</div>
+  <div class="exp hid"></div></article>`;
+}
+function reveal(card, q, picked){
+  const opts = card.querySelectorAll('.opt');
+  opts.forEach((b,k)=>{b.disabled=true;if(q.o[k].c)b.classList.add('ok');else if(k===picked)b.classList.add('bad')});
+  const ans = q.o.findIndex(o=>o.c);
+  const exp = card.querySelector('.exp');
+  exp.classList.remove('hid');
+  exp.innerHTML = `<b class="k">Jawaban ${LET[ans]}.</b> ${esc(q.e)} <a class="gl" target="_blank" rel="noopener" href="${G(q.q.replace('…','')+' marine',false)}">Cari di Google</a>`;
+}
+
+/* ============ LATIHAN ============ */
+let fTopic='ALL', fText='', showAll=false, done={};
+const chips = $('#chips');
+chips.innerHTML = [['ALL','Semua']].concat(Object.entries(TOPICS)).map(([k,v])=>`<button class="chip" data-t="${k}" aria-pressed="${k==='ALL'}">${v}</button>`).join('');
+chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;fTopic=b.dataset.t;chips.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));renderLat()});
+$('#search').addEventListener('input',e=>{fText=e.target.value.toLowerCase();renderLat()});
+$('#toggleAll').addEventListener('click',()=>{showAll=!showAll;$('#toggleAll').textContent=showAll?'Sembunyikan jawaban':'Tampilkan semua jawaban';renderLat()});
+$('#resetLat').addEventListener('click',()=>{done={};showAll=false;$('#toggleAll').textContent='Tampilkan semua jawaban';renderLat()});
+function renderLat(){
+  const list = QS.filter(q=>(fTopic==='ALL'||q.t===fTopic)&&(!fText||(q.q+' '+q.o.map(o=>o.t).join(' ')+' '+q.e).toLowerCase().includes(fText)));
+  $('#countLat').textContent = list.length+' soal';
+  const box = $('#qList');
+  box.innerHTML = list.map((q,i)=>cardHTML(q,i+1)).join('') || '<p class="note">Tidak ada soal yang cocok.</p>';
+  box.querySelectorAll('.q').forEach(card=>{
+    const q = QS[+card.dataset.id];
+    if(showAll) reveal(card,q,-1);
+    else if(done[q.id]!==undefined) reveal(card,q,done[q.id]);
+  });
+}
+$('#qList').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b||b.disabled)return;
+  const card=b.closest('.q'),q=QS[+card.dataset.id],k=+b.dataset.k;
+  done[q.id]=k;reveal(card,q,k);
+});
+renderLat();
+
+/* ============ KUIS ============ */
+let quiz=null;
+function quizSetup(){
+  $('#quizBox').innerHTML = `<div class="setup">
+  <label>Jumlah soal<select id="qCount"><option>10</option><option selected>20</option><option>30</option><option value="all">Semua</option></select></label>
+  <label>Topik<select id="qTopic"><option value="ALL">Semua topik</option>${Object.entries(TOPICS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label>
+  <button class="btn" id="qStart">Mulai kuis</button></div>
+  <p class="note" style="margin-top:12px">Tidak ada batas waktu. Anggap ini simulasi UTS: jawab dulu, baca penjelasan sesudahnya.</p>`;
+  $('#qStart').onclick=()=>{
+    let pool = QS.filter(q=>$('#qTopic').value==='ALL'||q.t===$('#qTopic').value);
+    pool = shuffle(pool);
+    const c = $('#qCount').value; if(c!=='all') pool = pool.slice(0,+c);
+    if(!pool.length) return;
+    quiz={list:pool,i:0,score:0,wrong:[],answered:false};
+    quizShow();
+  };
+}
+function quizShow(){
+  const q=quiz.list[quiz.i], total=quiz.list.length;
+  const reshuf = Object.assign({},q,{o:shuffle(q.o)});
+  quiz.cur = reshuf;
+  $('#quizBox').innerHTML = `<div class="count">Soal ${quiz.i+1} dari ${total}. Skor sementara ${quiz.score}</div>
+  <div class="bar"><i style="width:${(quiz.i/total)*100}%"></i></div>
+  ${cardHTML(reshuf,quiz.i+1)}
+  <button class="btn" id="qNext" style="display:none">${quiz.i+1===total?'Lihat hasil':'Soal berikutnya'}</button>`;
+  quiz.answered=false;
+}
+$('#quizBox').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');
+  if(b&&!b.disabled&&quiz&&!quiz.answered){
+    quiz.answered=true;
+    const card=b.closest('.q'),q=quiz.cur,k=+b.dataset.k;
+    if(q.o[k].c) quiz.score++; else quiz.wrong.push(q);
+    reveal(card,q,k);
+    $('#qNext').style.display='inline-block';
+    return;
+  }
+  if(e.target.id==='qNext'){
+    quiz.i++;
+    if(quiz.i<quiz.list.length) quizShow(); else quizResult();
+  }
+});
+function quizResult(){
+  const total=quiz.list.length, pct=Math.round(quiz.score/total*100);
+  const msg = pct>=80?'Sangat siap.':pct>=60?'Cukup, perkuat bagian yang salah.':'Ulangi materi checklist lalu coba lagi.';
+  $('#quizBox').innerHTML = `<div class="count">Hasil kuis</div><div class="score">${quiz.score} / ${total} (${pct}%)</div><p>${msg}</p>
+  <button class="btn" id="qAgain">Kuis baru</button>
+  ${quiz.wrong.length?`<div class="rev"><h3 style="font-size:15px;color:var(--gold);margin-bottom:10px">Tinjau soal yang salah (${quiz.wrong.length})</h3>${quiz.wrong.map((q,i)=>cardHTML(q,i+1)).join('')}</div>`:''}`;
+  $('#qAgain').onclick=quizSetup;
+  document.querySelectorAll('#quizBox .rev .q').forEach((card,i)=>reveal(card,quiz.wrong[i],-1));
+}
+quizSetup();
+
+/* ============ ESAI ============ */
+$('#esaiList').innerHTML = ESAI.map((e,i)=>`<details class="item"><summary><span class="no">${String(i+1).padStart(2,'0')}</span><span class="short">${esc(e[0])}</span></summary><div class="body">${e[1]}</div></details>`).join('');
+
+/* ============ REFERENSI ============ */
+$('#refGrid').innerHTML = REFS.map(r=>`<div class="ref"><h3>${esc(r[0])}</h3>${r[1].map(k=>`<a target="_blank" rel="noopener" href="${G(k)}">${esc(k)}</a><a target="_blank" rel="noopener" style="font-size:15px;color:var(--mute);margin-bottom:6px" href="${G(k,true)}">gambar</a>`).join('')}</div>`).join('');
+</script>
+</body>
+</html>
